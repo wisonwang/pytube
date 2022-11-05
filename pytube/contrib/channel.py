@@ -151,28 +151,12 @@ class Channel(Playlist):
             videos = initial_data["contents"][
                 "twoColumnBrowseResultsRenderer"][
                 "tabs"][1]["tabRenderer"]["content"][
-                "sectionListRenderer"]["contents"][0][
-                "itemSectionRenderer"]["contents"][0][
-                "gridRenderer"]["items"]
-        except (KeyError, IndexError, TypeError):
-            try:
-                # this is the json tree structure, if the json was directly sent
-                # by the server in a continuation response
-                important_content = initial_data[1]['response']['onResponseReceivedActions'][
-                    0
-                ]['appendContinuationItemsAction']['continuationItems']
-                videos = important_content
-            except (KeyError, IndexError, TypeError):
-                try:
-                    # this is the json tree structure, if the json was directly sent
-                    # by the server in a continuation response
-                    # no longer a list and no longer has the "response" key
-                    important_content = initial_data['onResponseReceivedActions'][0][
-                        'appendContinuationItemsAction']['continuationItems']
-                    videos = important_content
-                except (KeyError, IndexError, TypeError) as p:
-                    logger.info(p)
-                    return [], None
+                "richGridRenderer"]["contents"]
+        except (KeyError, IndexError, TypeError) as p:
+            logger.info(p)
+            logger.error("extract_videos error", exc_info=1)
+            # logger.error(json.dump(initial_data, open("/tmp/tt.json", "w")))
+            return [], None
 
         try:
             continuation = videos[-1]['continuationItemRenderer'][
@@ -191,7 +175,7 @@ class Channel(Playlist):
                     map(
                         lambda x: (
                             f"/watch?v="
-                            f"{x['gridVideoRenderer']['videoId']}"
+                            f"{x['richItemRenderer']['content']['videoRenderer']['videoId']}"
                         ),
                         videos
                     )
