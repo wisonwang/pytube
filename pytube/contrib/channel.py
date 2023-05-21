@@ -156,7 +156,7 @@ class Channel(Playlist):
             logger.info(f"{len(videos)}")
         except (KeyError, IndexError, TypeError) as p:
             logger.info(p)
-            logger.error("extract_videos error", stack_info=True, exc_info=True)
+            logger.error("extract_videos error", stack_info=True)
             # logger.error(json.dump(initial_data, open("/tmp/tt.json", "w")))
             return [], None
 
